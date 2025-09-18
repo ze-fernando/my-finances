@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     },
     boxValue: {
         color: "white",
-        fontSize: 15,
+        fontSize: 13,
         fontWeight: "bold",
     },
     pieBox: {
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     barChartSection: {
+        bottom: 20,
         marginBottom: 32,
     },
 });
