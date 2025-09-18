@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     list: {
         flex: 1,
-        marginBottom: 16,
+        marginBottom: 80
     },
     listItem: {
         flexDirection: 'row',
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         position: 'absolute',
-        bottom: 100,
-        right: 20,
+        bottom: 150,
+        right: 30,
         zIndex: 10,
     },
 

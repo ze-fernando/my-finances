@@ -51,7 +51,6 @@ export default function App() {
     return null;
   }
 
-  // Só renderiza a navegação depois de autenticar
   return (
     <NavigationContainer>
       <Tab.Navigator

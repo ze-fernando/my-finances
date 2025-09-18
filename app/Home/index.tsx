@@ -82,7 +82,7 @@ function Home() {
                 <PieChart
                     data={pieData}
                     width={screenWidth - 32}
-                    height={180}
+                    height={220}
                     accessor="value"
                     backgroundColor="transparent"
                     paddingLeft="0"

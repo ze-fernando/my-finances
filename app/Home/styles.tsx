@@ -45,6 +45,10 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 32,
     },
+    viewMaxExpense: {
+        flexDirection: "row",
+        columnGap: 10
+    },
     maxExpenseValue: {
         color: "white",
         fontSize: 18,
