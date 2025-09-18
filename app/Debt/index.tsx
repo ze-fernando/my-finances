@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch, Platform, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../utils/colors";
 import { DebtItem } from "./interfaces";
 import styles from "./styles";
 import { deleteDebt, fetchDebts, insertDebt } from "../../utils/db";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { KeyboardAvoidingView } from "react-native";
 
 function Debt() {
     const [debts, setDebts] = useState<DebtItem[]>([]);
@@ -108,44 +109,54 @@ function Debt() {
             </TouchableOpacity>
 
             <Modal visible={modalVisible} transparent animationType="slide">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Adicionar Débito</Text>
-                        <TextInput
-                            placeholder="Nome"
-                            placeholderTextColor="#ccc"
-                            style={styles.input}
-                            value={newName}
-                            onChangeText={setNewName}
-                        />
-                        <TextInput
-                            placeholder="Valor Pago"
-                            placeholderTextColor="#ccc"
-                            style={styles.input}
-                            value={newValue}
-                            onChangeText={setNewValue}
-                            keyboardType="numeric"
-                        />
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-                            <Text style={{ color: 'white', marginRight: 10 }}>Pago:</Text>
-                            <Switch
-                                value={newPaid}
-                                onValueChange={setNewPaid}
-                                trackColor={{ false: "#767577", true: colors.primary }}
-                                thumbColor={newPaid ? colors.primary : "#f4f3f4"}
-                            />
-                        </View>
-                        <TouchableOpacity style={styles.button} onPress={addDebt}>
-                            <Text style={styles.buttonText}>Salvar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={[styles.button, { backgroundColor: 'gray', marginTop: 10 }]}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.buttonText}>Cancelar</Text>
-                        </TouchableOpacity>
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === "ios" ? "padding" : undefined}
+                >
+                    <View style={styles.modalOverlay}>
+                        <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Adicionar Débito</Text>
+
+                                <TextInput
+                                    placeholder="Nome"
+                                    placeholderTextColor="#ccc"
+                                    style={styles.input}
+                                    value={newName}
+                                    onChangeText={setNewName}
+                                />
+                                <TextInput
+                                    placeholder="Valor Pago"
+                                    placeholderTextColor="#ccc"
+                                    style={styles.input}
+                                    value={newValue}
+                                    onChangeText={setNewValue}
+                                    keyboardType="numeric"
+                                />
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                                    <Text style={{ color: 'white', marginRight: 10 }}>Pago:</Text>
+                                    <Switch
+                                        value={newPaid}
+                                        onValueChange={setNewPaid}
+                                        trackColor={{ false: "#767577", true: colors.primary }}
+                                        thumbColor={newPaid ? colors.primary : "#f4f3f4"}
+                                    />
+                                </View>
+
+                                <TouchableOpacity style={styles.button} onPress={addDebt}>
+                                    <Text style={styles.buttonText}>Salvar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.button, { backgroundColor: 'gray', marginTop: 10 }]}
+                                    onPress={() => setModalVisible(false)}
+                                >
+                                    <Text style={styles.buttonText}>Cancelar</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             </Modal>
         </View>
     );

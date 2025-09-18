@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../utils/colors";
 import { IncomeItem } from "./interfaces";
@@ -108,44 +108,54 @@ function Income() {
       </TouchableOpacity>
 
       <Modal visible={modalVisible} transparent animationType="slide">
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Adicionar Receita</Text>
-            <TextInput
-              placeholder="Nome"
-              placeholderTextColor="#ccc"
-              style={styles.input}
-              value={newName}
-              onChangeText={setNewName}
-            />
-            <TextInput
-              placeholder="Valor"
-              placeholderTextColor="#ccc"
-              style={styles.input}
-              value={newValue}
-              onChangeText={setNewValue}
-              keyboardType="numeric"
-            />
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ color: 'white', marginRight: 10 }}>Recebido:</Text>
-              <Switch
-                value={newReceived}
-                onValueChange={setNewReceived}
-                trackColor={{ false: "#767577", true: colors.primary }}
-                thumbColor={newReceived ? colors.primary : "#f4f3f4"}
-              />
-            </View>
-            <TouchableOpacity style={styles.button} onPress={addIncome}>
-              <Text style={styles.buttonText}>Salvar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: 'gray', marginTop: 10 }]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.buttonText}>Cancelar</Text>
-            </TouchableOpacity>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+          <View style={styles.modalOverlay}>
+            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Adicionar Receita</Text>
+
+                <TextInput
+                  placeholder="Nome"
+                  placeholderTextColor="#ccc"
+                  style={styles.input}
+                  value={newName}
+                  onChangeText={setNewName}
+                />
+                <TextInput
+                  placeholder="Valor"
+                  placeholderTextColor="#ccc"
+                  style={styles.input}
+                  value={newValue}
+                  onChangeText={setNewValue}
+                  keyboardType="numeric"
+                />
+
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
+                  <Text style={{ color: 'white', marginRight: 10 }}>Recebido:</Text>
+                  <Switch
+                    value={newReceived}
+                    onValueChange={setNewReceived}
+                    trackColor={{ false: "#767577", true: colors.primary }}
+                    thumbColor={newReceived ? colors.primary : "#f4f3f4"}
+                  />
+                </View>
+
+                <TouchableOpacity style={styles.button} onPress={addIncome}>
+                  <Text style={styles.buttonText}>Salvar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.button, { backgroundColor: 'gray', marginTop: 10 }]}
+                  onPress={() => setModalVisible(false)}
+                >
+                  <Text style={styles.buttonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );

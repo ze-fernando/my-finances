@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "my-finances",
+    "name": "Minhas Finanças",
     "slug": "my-finances",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,7 +21,8 @@
         "backgroundColor": "#535353"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.ze_fernando.myfinances"
     },
     "web": {
       "favicon": "./assets/favicon.png"

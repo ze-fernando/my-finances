@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { BackHandler, StyleSheet, Text, View } from 'react-native';
+import { BackHandler, Platform, StyleSheet, Text, View } from 'react-native';
+import * as NavigationBar from 'expo-navigation-bar';
 import Home from './app/Home';
 import Debt from './app/Debt';
 import Income from './app/Income';
@@ -14,7 +15,7 @@ type IconName = 'home-outline' | 'cash-outline' | 'wallet-outline' | '';
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
     const authenticate = async () => {
@@ -28,21 +29,29 @@ const [authenticated, setAuthenticated] = useState(false);
 
       const result = await LocalAuthentication.authenticateAsync({
         promptMessage: 'Autentique-se para acessar o app',
-        fallbackLabel: 'Usar senha do dispositivo', // Android/iOS
-        disableDeviceFallback: false, // permite fallback para PIN/senha
+        fallbackLabel: 'Usar senha do dispositivo',
+        disableDeviceFallback: false,
       });
 
       if (result.success) {
         setAuthenticated(true);
       } else {
-        BackHandler.exitApp(); // fecha app se falhar
+        BackHandler.exitApp();
       }
-
     };
 
     authenticate();
   }, []);
 
+  useEffect(() => {
+    NavigationBar.setVisibilityAsync('hidden');
+  }, []);
+
+  if (!authenticated) {
+    return null;
+  }
+
+  // Só renderiza a navegação depois de autenticar
   return (
     <NavigationContainer>
       <Tab.Navigator
@@ -81,10 +90,11 @@ const [authenticated, setAuthenticated] = useState(false);
           },
         })}
       >
-
         <Tab.Screen name="Home" component={Home} />
         <Tab.Screen name="Debts" component={Debt} />
         <Tab.Screen name="Incomes" component={Income} />
       </Tab.Navigator>
-    </NavigationContainer>);
+    </NavigationContainer>
+  );
 }
+
