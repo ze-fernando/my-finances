@@ -36,6 +36,11 @@ function Home() {
             loadData();
         }, [])
     );
+
+    const formatCurrency = (value: number) => {
+        return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
+
     const totalExpenses = debts.reduce((acc, d) => acc + d.value, 0);
     const totalIncome = incomes.reduce((acc, i) => acc + i.value, 0);
     const totalRemaining = totalIncome - totalExpenses;
@@ -64,15 +69,15 @@ function Home() {
             <View style={styles.topBoxes}>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Recebido</Text>
-                    <Text style={styles.boxValue}>R$ {totalIncome}</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalIncome)}</Text>
                 </View>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Saída</Text>
-                    <Text style={styles.boxValue}>R$ {totalExpenses}</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalExpenses)}</Text>
                 </View>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Restante</Text>
-                    <Text style={styles.boxValue}>R$ {totalRemaining}</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalRemaining)}</Text>
                 </View>
             </View>
 
@@ -95,12 +100,13 @@ function Home() {
                 />
             </View>
 
+            <Text style={styles.boxLabel}>Maior Gasto</Text>
             {/* Maior gasto abaixo do gráfico de pizza */}
             <View style={styles.maxExpenseBox}>
                 <Ionicons name="alert-circle-outline" size={24} color={colors.primary} style={{ marginRight: 8 }} />
                 <View>
                     <Text style={styles.maxExpenseValue}>{maxExpense.name}</Text>
-                    <Text style={styles.maxExpenseAmount}>R$ {maxExpense.value}</Text>
+                    <Text style={styles.maxExpenseAmount}>R$ {formatCurrency(maxExpense.value)}</Text>
                 </View>
             </View>
 
@@ -110,7 +116,7 @@ function Home() {
                 <BarChart
                     data={barData}
                     width={screenWidth - 32}
-                    height={220}
+                    height={180}
                     chartConfig={{
                         backgroundGradientFrom: colors.bg_secondary,
                         backgroundGradientTo: colors.bg_secondary,

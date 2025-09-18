@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../utils/colors";
 import { IncomeItem } from "./interfaces";
@@ -42,7 +42,14 @@ function Income() {
     loadIncomes();
   }, []);
 
-  const totalReceived = incomes.filter(i => i.received).reduce((acc, i) => acc + i.value, 0);
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const totalReceived = incomes
+    .filter(i => i.received)
+    .reduce((acc, i) => acc + i.value, 0);
+
   const totalIncome = incomes.reduce((acc, i) => acc + i.value, 0);
 
   const toggleReceived = async (id: number, value: boolean) => {
@@ -53,7 +60,10 @@ function Income() {
   const addIncome = async () => {
     if (!newName || !newValue) return;
 
-    insertIncome(newName, Number(newValue), newReceived);
+    const valueNumber = parseFloat(newValue.replace(',', '.'));
+    if (isNaN(valueNumber)) return;
+
+    insertIncome(newName, valueNumber, newReceived);
     await loadIncomes();
 
     setNewName('');
@@ -72,11 +82,11 @@ function Income() {
       <View style={styles.topBoxes}>
         <View style={styles.box}>
           <Text style={styles.boxLabel}>Total Receita</Text>
-          <Text style={styles.boxValue}>R$ {totalIncome}</Text>
+          <Text style={styles.boxValue}>R$ {formatCurrency(totalIncome)}</Text>
         </View>
         <View style={styles.box}>
           <Text style={styles.boxLabel}>Total Recebido</Text>
-          <Text style={styles.boxValue}>R$ {totalReceived}</Text>
+          <Text style={styles.boxValue}>R$ {formatCurrency(totalReceived)}</Text>
         </View>
       </View>
 
@@ -87,7 +97,7 @@ function Income() {
         renderItem={({ item }) => (
           <View style={styles.listItem}>
             <Text style={styles.listText}>{item.name}</Text>
-            <Text style={styles.listText}>R$ {item.value}</Text>
+            <Text style={styles.listText}>R$ {formatCurrency(item.value)}</Text>
 
             <Switch
               value={item.received}
@@ -124,7 +134,7 @@ function Income() {
               style={styles.input}
               value={newValue}
               onChangeText={setNewValue}
-              keyboardType="numeric"
+              keyboardType="decimal-pad" // permite ponto flutuante
             />
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
               <Text style={{ color: 'white', marginRight: 10 }}>Recebido:</Text>

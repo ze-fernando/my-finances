@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     },
     boxValue: {
         color: "white",
-        fontSize: 18,
+        fontSize: 15,
         fontWeight: "bold",
     },
     pieBox: {

@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch, Platform, ScrollView } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../utils/colors";
 import { DebtItem } from "./interfaces";
 import styles from "./styles";
 import { deleteDebt, fetchDebts, insertDebt } from "../../utils/db";
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { KeyboardAvoidingView } from "react-native";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 function Debt() {
     const [debts, setDebts] = useState<DebtItem[]>([]);
@@ -17,7 +16,6 @@ function Debt() {
 
     const loadDebts = async () => {
         const dbDebts = fetchDebts();
-
         const paidState = await AsyncStorage.getItem("debtsPaid");
         const paidMap: Record<string, boolean> = paidState ? JSON.parse(paidState) : {};
 
@@ -27,13 +25,15 @@ function Debt() {
         }));
 
         setDebts(debtsWithPaid);
-
         return debtsWithPaid;
     };
 
     useEffect(() => {
         loadDebts();
     }, []);
+
+    const formatCurrency = (value: number) =>
+        value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const totalPaid = debts.filter(d => d.paid).reduce((acc, d) => acc + d.value, 0);
     const totalValue = debts.reduce((acc, d) => acc + d.value, 0);
@@ -48,10 +48,11 @@ function Debt() {
     const addDebt = async () => {
         if (!newName || !newValue) return;
 
-        insertDebt(newName, Number(newValue), newPaid);
+        const valueNumber = parseFloat(newValue.replace(',', '.'));
+        if (isNaN(valueNumber)) return;
 
-        const updatedDebts = await loadDebts();
-        setDebts(updatedDebts);
+        insertDebt(newName, valueNumber, newPaid);
+        await loadDebts();
 
         setNewName('');
         setNewValue('');
@@ -74,11 +75,11 @@ function Debt() {
             <View style={styles.topBoxes}>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Total Saída</Text>
-                    <Text style={styles.boxValue}>R$ {totalValue}</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalValue)}</Text>
                 </View>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Total Pago</Text>
-                    <Text style={styles.boxValue}>R$ {totalPaid}</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalPaid)}</Text>
                 </View>
             </View>
 
@@ -89,7 +90,7 @@ function Debt() {
                 renderItem={({ item }) => (
                     <View style={styles.listItem}>
                         <Text style={styles.listText}>{item.name}</Text>
-                        <Text style={styles.listText}>R$ {item.value}</Text>
+                        <Text style={styles.listText}>R$ {formatCurrency(item.value)}</Text>
                         <Switch
                             value={item.paid}
                             onValueChange={(value) => togglePaid(item.id, value)}
@@ -108,7 +109,7 @@ function Debt() {
                 <Text style={[styles.buttonText, { fontSize: 20 }]}>+</Text>
             </TouchableOpacity>
 
-           <Modal visible={modalVisible} transparent animationType="slide">
+            <Modal visible={modalVisible} transparent animationType="slide">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Adicionar Débito</Text>
@@ -120,12 +121,12 @@ function Debt() {
                             onChangeText={setNewName}
                         />
                         <TextInput
-                            placeholder="Valor Pago"
+                            placeholder="Valor"
                             placeholderTextColor="#ccc"
                             style={styles.input}
                             value={newValue}
                             onChangeText={setNewValue}
-                            keyboardType="numeric"
+                            keyboardType="decimal-pad"
                         />
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
                             <Text style={{ color: 'white', marginRight: 10 }}>Pago:</Text>
@@ -153,4 +154,3 @@ function Debt() {
 }
 
 export default Debt;
-
