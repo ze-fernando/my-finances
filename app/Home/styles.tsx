@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     },
     pieBox: {
         backgroundColor: colors.bg_primary,
-        padding: 16,
+        padding: 10,
         borderRadius: 10,
         marginBottom: 16,
         alignItems: "center",
@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     barChartSection: {
-        bottom: 20,
         marginBottom: 32,
     },
 });

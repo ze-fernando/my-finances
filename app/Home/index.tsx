@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { View, Text, Dimensions, ScrollView } from "react-native";
 import { PieChart, BarChart } from "react-native-chart-kit";
 import { Ionicons } from "@expo/vector-icons";
@@ -38,8 +38,14 @@ function Home() {
     );
 
     const formatCurrency = (value: number) => {
-        return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return value.toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
     };
+
 
     const totalExpenses = debts.reduce((acc, d) => acc + d.value, 0);
     const totalIncome = incomes.reduce((acc, i) => acc + i.value, 0);
@@ -50,40 +56,93 @@ function Home() {
         { id: 0, value: 0, name: "", paid: false }
     );
 
-    const pieData = debts.map((d, index) => ({
-        name: d.name,
-        value: d.value,
-        color: getColor(index),
-        legendFontColor: "#fff",
-        legendFontSize: 12,
-    }));
+    const pieData = [
+        {
+            name: "Gastos",
+            value: totalExpenses,
+            color: colors.primary,
+            legendFontColor: "#fff",
+            legendFontSize: 12,
+        },
+        {
+            name: "Receitas",
+            value: totalIncome,
+            color: colors.bg_secondary,
+            legendFontColor: "#fff",
+            legendFontSize: 12,
+        },
+    ];
 
     const barData = {
-        labels: ["Gastos", "Receitas"],
-        datasets: [{ data: [totalExpenses, totalIncome] }],
+        labels: debts.map(d => d.name),
+        datasets: [{ data: debts.map(d => d.value) }],
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView
+            style={styles.container}
+            contentContainerStyle={{ paddingBottom: 50 }} // evita navbar cobrir último gráfico
+        >
             {/* Topo com os 3 totais */}
             <View style={styles.topBoxes}>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Recebido</Text>
-                    <Text style={styles.boxValue}>R$ {formatCurrency(totalIncome)}</Text>
+                    <Text style={styles.boxValue}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                    >{formatCurrency(totalIncome)}</Text>
                 </View>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Saída</Text>
-                    <Text style={styles.boxValue}>R$ {formatCurrency(totalExpenses)}</Text>
+                    <Text style={styles.boxValue}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                    >{formatCurrency(totalExpenses)}</Text>
                 </View>
                 <View style={styles.box}>
                     <Text style={styles.boxLabel}>Restante</Text>
-                    <Text style={styles.boxValue}>R$ {formatCurrency(totalRemaining)}</Text>
+                    <Text style={styles.boxValue}
+                        numberOfLines={1}
+                        adjustsFontSizeToFit
+                    >{formatCurrency(totalRemaining)}</Text>
                 </View>
             </View>
 
-            {/* Gráfico de pizza */}
+            {/* Gráfico de Barras - Gastos detalhados */}
+            <View style={styles.barChartSection}>
+                <Text style={styles.boxLabel}>Distribuição dos Gastos</Text>
+                <BarChart
+                    data={barData}
+                    width={screenWidth - 32}
+                    height={220}
+                    chartConfig={{
+                        backgroundGradientFrom: colors.bg_secondary,
+                        backgroundGradientTo: colors.bg_secondary,
+                        color: (opacity = 1) => `rgba(0, 255, 170, ${opacity})`,
+                        labelColor: () => "#fff",
+                        decimalPlaces: 0,
+                    }}
+                    style={{ borderRadius: 10, marginTop: 16 }}
+                    fromZero
+                    showValuesOnTopOfBars
+                    yAxisLabel=""
+                    yAxisSuffix=""
+                />
+            </View>
+
+            {/* Maior gasto */}
+            <Text style={styles.boxLabel}>Maior Gasto</Text>
+            <View style={styles.maxExpenseBox}>
+                <Ionicons name="alert-circle-outline" size={24} color={colors.primary} style={{ marginRight: 8 }} />
+                <View>
+                    <Text style={styles.maxExpenseValue}>{maxExpense.name}</Text>
+                    <Text style={styles.maxExpenseAmount}>{formatCurrency(maxExpense.value)}</Text>
+                </View>
+            </View>
+
+            {/* Gráfico de Pizza - Comparativo Gastos x Receitas */}
             <View style={styles.pieBox}>
-                <Text style={styles.boxLabel}>Distribuição de Gastos</Text>
+                <Text style={styles.boxLabel}>Comparativo Ganhos x Gastos</Text>
                 <PieChart
                     data={pieData}
                     width={screenWidth - 32}
@@ -97,38 +156,6 @@ function Home() {
                         decimalPlaces: 0,
                     }}
                     hasLegend={true}
-                />
-            </View>
-
-            <Text style={styles.boxLabel}>Maior Gasto</Text>
-            {/* Maior gasto abaixo do gráfico de pizza */}
-            <View style={styles.maxExpenseBox}>
-                <Ionicons name="alert-circle-outline" size={24} color={colors.primary} style={{ marginRight: 8 }} />
-                <View>
-                    <Text style={styles.maxExpenseValue}>{maxExpense.name}</Text>
-                    <Text style={styles.maxExpenseAmount}>R$ {formatCurrency(maxExpense.value)}</Text>
-                </View>
-            </View>
-
-            {/* Comparativo Ganhos x Gastos */}
-            <View style={styles.barChartSection}>
-                <Text style={styles.boxLabel}>Comparativo Ganhos x Gastos</Text>
-                <BarChart
-                    data={barData}
-                    width={screenWidth - 32}
-                    height={180}
-                    chartConfig={{
-                        backgroundGradientFrom: colors.bg_secondary,
-                        backgroundGradientTo: colors.bg_secondary,
-                        color: (opacity = 1) => `rgba(0, 255, 170, ${opacity})`,
-                        labelColor: () => "#fff",
-                        decimalPlaces: 0,
-                    }}
-                    style={{ borderRadius: 10, marginTop: 16 }}
-                    fromZero
-                    showValuesOnTopOfBars
-                    yAxisLabel=""
-                    yAxisSuffix=""
                 />
             </View>
         </ScrollView>

@@ -13,11 +13,13 @@
       "backgroundColor": "#535353"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ze-fernando.myfinances"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon-normal.png",
+        "monochromeImage": "./assets/icon-normal.png",
         "backgroundColor": "#535353"
       },
       "edgeToEdgeEnabled": true,
