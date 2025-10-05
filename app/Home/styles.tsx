@@ -1,5 +1,7 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../utils/colors";
+
+const screenWidth = Dimensions.get("window").width;
 
 const styles = StyleSheet.create({
     container: {
@@ -8,61 +10,70 @@ const styles = StyleSheet.create({
         padding: 16,
         paddingTop: 30,
     },
-    topBoxes: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 16,
+    eyeButtonContainer: {           // Botão de olho
+   flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    width: '100%' 
     },
-    box: {
-        flex: 1,
+    eyeButton: {
         backgroundColor: colors.bg_primary,
-        padding: 16,
-        borderRadius: 10,
-        marginHorizontal: 5,
+        borderRadius: 12,
+        padding: 6,
     },
+
     boxLabel: {
         color: "white",
-        fontSize: 14,
-        marginBottom: 4,
+        fontSize: 16, // maior
+        marginBottom: 6,
+        textAlign: "left",
+        alignSelf: "flex-start",
     },
     boxValue: {
         color: "white",
-        fontSize: 13,
+        fontSize: 18, // maior
         fontWeight: "bold",
+        textAlign: "left",
+        alignSelf: "flex-start",
     },
-    pieBox: {
+    mainCard: {
         backgroundColor: colors.bg_primary,
-        padding: 10,
+        padding: 18,
         borderRadius: 10,
-        marginBottom: 16,
-        alignItems: "center",
+        marginBottom: 14,
+        alignItems: "flex-start", // alinhamento à esquerda
     },
-    maxExpenseBox: {
+    sideCard: {
+        backgroundColor: colors.bg_primary,
+        padding: 18,
+        borderRadius: 10,
+        height: 120,
+        justifyContent: "center",
+        alignItems: "flex-start",
+    },
+    cardsRow: {                     // Linha de cards
         flexDirection: "row",
-        backgroundColor: colors.bg_primary,
-        padding: 16,
-        borderRadius: 10,
-        alignItems: "center",
+        justifyContent: "space-between",
         marginBottom: 32,
     },
-    viewMaxExpense: {
-        flexDirection: "row",
-        columnGap: 10
-    },
-    maxExpenseValue: {
+    maxExpenseName: {
         color: "white",
-        fontSize: 18,
-        fontWeight: "bold",
+        marginTop: 4,
     },
-    maxExpenseAmount: {
-        color: "white",
-        fontSize: 20,
-        fontWeight: "bold",
-    },
+
     barChartSection: {
-        marginBottom: 32,
+        marginBottom: 100,
     },
+    barChartTitle: {
+        color: "white",
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    barChartStyle: {
+        borderRadius: 16,
+    },
+
 });
 
-
 export default styles;
+

@@ -37,6 +37,8 @@ function Debt() {
 
     const totalPaid = debts.filter(d => d.paid).reduce((acc, d) => acc + d.value, 0);
     const totalValue = debts.reduce((acc, d) => acc + d.value, 0);
+    const totalPending = totalValue - totalPaid;
+
 
     const savePaidState = async (id: number, value: boolean) => {
         const paidState = await AsyncStorage.getItem("debtsPaid");
@@ -78,8 +80,8 @@ function Debt() {
                     <Text style={styles.boxValue}>R$ {formatCurrency(totalValue)}</Text>
                 </View>
                 <View style={styles.box}>
-                    <Text style={styles.boxLabel}>Total Pago</Text>
-                    <Text style={styles.boxValue}>R$ {formatCurrency(totalPaid)}</Text>
+                    <Text style={styles.boxLabel}>Pagamento Pendente</Text>
+                    <Text style={styles.boxValue}>R$ {formatCurrency(totalPending)}</Text>
                 </View>
             </View>
 
