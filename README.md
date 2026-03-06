@@ -12,19 +12,19 @@ Todos os dados são armazenados **localmente no dispositivo**, permitindo que o 
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="./finances1.png" width="250"/>
-  <img src="./finances2.png" width="250"/>
-  <img src="./finances3.png" width="250"/>
+  <img src="./pictures/finances1.png" width="250"/>
+  <img src="./pictures/finances2.png" width="250"/>
+  <img src="./pictures/finances3.png" width="250"/>
 </p>
 
 <p align="center">
-  <img src="./finances4.png" width="250"/>
-  <img src="./finances5.png" width="250"/>
-  <img src="./finances6.png" width="250"/>
+  <img src="./pictures/finances4.png" width="250"/>
+  <img src="./pictures/finances5.png" width="250"/>
+  <img src="./pictures/finances6.png" width="250"/>
 </p>
 
 <p align="center">
-  <img src="./finances7.png" width="250"/>
+  <img src="./pictures/finances7.png" width="250"/>
 </p>
 
 ---
