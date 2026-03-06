@@ -19,12 +19,7 @@ Todos os dados são armazenados **localmente no dispositivo**, permitindo que o 
 
 <p align="center">
   <img src="./pictures/finances4.png" width="250"/>
-  <img src="./pictures/finances5.png" width="250"/>
-  <img src="./pictures/finances6.png" width="250"/>
-</p>
-
-<p align="center">
-  <img src="./pictures/finances7.png" width="250"/>
+  <img src="./pictures/finances8.png" width="250"/>
 </p>
 
 ---
