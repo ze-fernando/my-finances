@@ -1,18 +1,37 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Modal, TextInput, Switch } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Switch,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { colors } from "../../utils/colors";
 import { IncomeItem } from "./interfaces";
 import styles from "./styles";
-import { fetchIncomes, insertIncome, deleteIncome } from "../../utils/db";
+import {
+  fetchIncomes,
+  insertIncome,
+  deleteIncome,
+  updateIncome,
+} from "../../utils/db";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 function Income() {
   const [incomes, setIncomes] = useState<IncomeItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newValue, setNewValue] = useState('');
+  const [newName, setNewName] = useState("");
+  const [newValue, setNewValue] = useState("");
   const [newReceived, setNewReceived] = useState(false);
+
+  const [modalVisibleEdit, setModalVisibleEdit] = useState(false);
+  const [editId, setEditId] = useState(0);
+  const [editName, setEditName] = useState("");
+  const [editValue, setEditValue] = useState("");
+  const [editReceived, setEditReceived] = useState(false);
 
   // AsyncStorage para o received
   const loadReceivedState = async (): Promise<Record<string, boolean>> => {
@@ -30,9 +49,9 @@ function Income() {
     const dbIncomes = fetchIncomes();
     const receivedMap = await loadReceivedState();
 
-    const incomesWithReceived = dbIncomes.map(i => ({
+    const incomesWithReceived = dbIncomes.map((i) => ({
       ...i,
-      received: receivedMap[i.id] ?? false
+      received: receivedMap[i.id] ?? false,
     }));
 
     setIncomes(incomesWithReceived);
@@ -42,32 +61,62 @@ function Income() {
     loadIncomes();
   }, []);
 
+  const editIncome = (id: number) => {
+    const income = incomes.find((i) => i.id === id);
+    if (income) {
+      setEditId(id);
+      setEditName(income.name);
+      setEditValue(
+        income.value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }),
+      );
+      setEditReceived(income.received);
+      setModalVisibleEdit(true);
+    }
+  };
+
+  const saveIncome = async () => {
+    if (!editName || !editValue) return;
+    const valueNumber = parseFloat(editValue.replace(",", "."));
+    if (isNaN(valueNumber)) return;
+    updateIncome(editId, editName, valueNumber, editReceived);
+    await loadIncomes();
+    setModalVisibleEdit(false);
+  };
+
   const formatCurrency = (value: number) => {
-    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString("pt-BR", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   const totalReceived = incomes
-    .filter(i => i.received)
+    .filter((i) => i.received)
     .reduce((acc, i) => acc + i.value, 0);
 
   const totalIncome = incomes.reduce((acc, i) => acc + i.value, 0);
 
   const toggleReceived = async (id: number, value: boolean) => {
     await saveReceivedState(id, value);
-    setIncomes(prev => prev.map(i => i.id === id ? { ...i, received: value } : i));
+    setIncomes((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, received: value } : i)),
+    );
   };
 
   const addIncome = async () => {
     if (!newName || !newValue) return;
 
-    const valueNumber = parseFloat(newValue.replace(',', '.'));
+    const valueNumber = parseFloat(newValue.replace(",", "."));
     if (isNaN(valueNumber)) return;
 
     insertIncome(newName, valueNumber, newReceived);
     await loadIncomes();
 
-    setNewName('');
-    setNewValue('');
+    setNewName("");
+    setNewValue("");
     setNewReceived(false);
     setModalVisible(false);
   };
@@ -75,6 +124,7 @@ function Income() {
   const handleDelete = async (id: number) => {
     deleteIncome(id);
     await loadIncomes();
+    setModalVisibleEdit(false);
   };
 
   return (
@@ -86,13 +136,15 @@ function Income() {
         </View>
         <View style={styles.box}>
           <Text style={styles.boxLabel}>Total Recebido</Text>
-          <Text style={styles.boxValue}>R$ {formatCurrency(totalReceived)}</Text>
+          <Text style={styles.boxValue}>
+            R$ {formatCurrency(totalReceived)}
+          </Text>
         </View>
       </View>
 
       <FlatList
         data={incomes}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         style={styles.list}
         renderItem={({ item }) => (
           <View style={styles.listItem}>
@@ -106,14 +158,20 @@ function Income() {
               thumbColor={item.received ? colors.primary : "#f4f3f4"}
             />
 
-            <TouchableOpacity onPress={() => handleDelete(item.id)} style={{ marginHorizontal: 12 }}>
-              <FontAwesome5 name="trash" size={20} color="red" />
+            <TouchableOpacity
+              onPress={() => editIncome(item.id)}
+              style={{ marginHorizontal: 12 }}
+            >
+              <FontAwesome5 name="edit" size={20} color={colors.primary} />
             </TouchableOpacity>
           </View>
         )}
       />
 
-      <TouchableOpacity style={styles.fabButton} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity
+        style={styles.fabButton}
+        onPress={() => setModalVisible(true)}
+      >
         <Text style={[styles.buttonText, { fontSize: 20 }]}>+</Text>
       </TouchableOpacity>
 
@@ -136,8 +194,14 @@ function Income() {
               onChangeText={setNewValue}
               keyboardType="decimal-pad" // permite ponto flutuante
             />
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 20 }}>
-              <Text style={{ color: 'white', marginRight: 10 }}>Recebido:</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ color: "white", marginRight: 10 }}>Recebido:</Text>
               <Switch
                 value={newReceived}
                 onValueChange={setNewReceived}
@@ -149,8 +213,71 @@ function Income() {
               <Text style={styles.buttonText}>Salvar</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: 'gray', marginTop: 10 }]}
+              style={[
+                styles.button,
+                { backgroundColor: "gray", marginTop: 10 },
+              ]}
               onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal visible={modalVisibleEdit} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Editar Receita</Text>
+            <TextInput
+              placeholder="Nome"
+              placeholderTextColor="#ccc"
+              style={styles.input}
+              value={editName}
+              onChangeText={setEditName}
+            />
+            <TextInput
+              placeholder="Valor"
+              placeholderTextColor="#ccc"
+              style={styles.input}
+              value={editValue}
+              onChangeText={setEditValue}
+              keyboardType="decimal-pad" // permite ponto flutuante
+            />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 20,
+              }}
+            >
+              <Text style={{ color: "white", marginRight: 10 }}>Recebido:</Text>
+              <Switch
+                value={editReceived}
+                onValueChange={setEditReceived}
+                trackColor={{ false: "#767577", true: colors.primary }}
+                thumbColor={editReceived ? colors.primary : "#f4f3f4"}
+              />
+            </View>
+            <TouchableOpacity style={styles.button} onPress={saveIncome}>
+              <Text style={styles.buttonText}>Salvar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: "#FF5B5B", marginTop: 10 },
+              ]}
+              onPress={() => handleDelete(editId)}
+            >
+              <Text style={styles.buttonText}>Apagar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: "gray", marginTop: 10 },
+              ]}
+              onPress={() => setModalVisibleEdit(false)}
             >
               <Text style={styles.buttonText}>Cancelar</Text>
             </TouchableOpacity>
@@ -162,4 +289,3 @@ function Income() {
 }
 
 export default Income;
-

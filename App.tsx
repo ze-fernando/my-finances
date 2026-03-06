@@ -1,16 +1,16 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { BackHandler, Platform, StyleSheet, Text, View } from 'react-native';
-import * as NavigationBar from 'expo-navigation-bar';
-import Home from './app/Home';
-import Debt from './app/Debt';
-import Income from './app/Income';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
-import { colors } from './utils/colors';
-import { useEffect, useState } from 'react';
-import * as LocalAuthentication from 'expo-local-authentication';
+import { NavigationContainer } from "@react-navigation/native";
+import { BackHandler, Platform, StyleSheet, Text, View } from "react-native";
+import * as NavigationBar from "expo-navigation-bar";
+import Home from "./app/Home";
+import Debt from "./app/Debt";
+import Income from "./app/Income";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { Ionicons } from "@expo/vector-icons";
+import { colors } from "./utils/colors";
+import { useEffect, useState } from "react";
+import * as LocalAuthentication from "expo-local-authentication";
 
-type IconName = 'home-outline' | 'cash-outline' | 'wallet-outline' | '';
+type IconName = "home-outline" | "cash-outline" | "wallet-outline" | "";
 
 const Tab = createBottomTabNavigator();
 
@@ -18,6 +18,10 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
+    if (__DEV__) {
+      setAuthenticated(true);
+      return;
+    }
     const authenticate = async () => {
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const isEnrolled = await LocalAuthentication.isEnrolledAsync();
@@ -28,8 +32,8 @@ export default function App() {
       }
 
       const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Autentique-se para acessar o app',
-        fallbackLabel: 'Usar senha do dispositivo',
+        promptMessage: "Autentique-se para acessar o app",
+        fallbackLabel: "Usar senha do dispositivo",
         disableDeviceFallback: false,
       });
 
@@ -44,7 +48,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    NavigationBar.setVisibilityAsync('hidden');
+    NavigationBar.setVisibilityAsync("hidden");
   }, []);
 
   if (!authenticated) {
@@ -67,23 +71,23 @@ export default function App() {
             height: 70,
             borderTopLeftRadius: 15,
             borderTopRightRadius: 15,
-            position: 'absolute',
+            position: "absolute",
             bottom: 10,
             left: 10,
             right: 10,
           },
           tabBarIcon: ({ color, size }) => {
-            let iconName: IconName = '';
+            let iconName: IconName = "";
 
-            if (route.name === 'Home') {
-              iconName = 'home-outline';
-            } else if (route.name === 'Debts') {
-              iconName = 'cash-outline';
-            } else if (route.name === 'Incomes') {
-              iconName = 'wallet-outline';
+            if (route.name === "Home") {
+              iconName = "home-outline";
+            } else if (route.name === "Debts") {
+              iconName = "cash-outline";
+            } else if (route.name === "Incomes") {
+              iconName = "wallet-outline";
             }
 
-            if (iconName !== '') {
+            if (iconName !== "") {
               return <Ionicons name={iconName} size={size} color={color} />;
             }
           },
@@ -96,4 +100,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
